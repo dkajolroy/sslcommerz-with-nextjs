@@ -19,24 +19,22 @@ export async function GET() {
   try {
     const result: SSLResponse = await sslConfig.init(data);
     // console.log(result);
-    if (!result.GatewayPageURL) {
-      const newData = {
-        paid: false,
-        totalAmount: 256,
-        name: "Kajol",
-        address: "Lalmoni",
-        trans_id: transactionId,
-      };
+    if (!result.GatewayPageURL || result.status === "FAILED") {
+      return NextResponse.json({ message: result.failedreason });
+    } else if (result.status === "SUCCESS") {
+      // const newData = {
+      //   paid: false,
+      //   totalAmount: 256,
+      //   name: "Kajol",
+      //   address: "Lalmoni",
+      //   trans_id: transactionId,
+      // };
       // mongoDB.payment.create(newData)
       // Add new payment but ( paid: false )
       // if redirect to success route then change ( paid: true ) in success route
 
-      return NextResponse.json({ message: result.failedreason });
-    } else if (result.status === "SUCCESS") {
       return NextResponse.redirect(result.GatewayPageURL);
-    } else if (result.status === "FAILED") {
-      return NextResponse.redirect(result.GatewayPageURL);
-    }
+    } 
 
     // return new NextResponse(JSON.stringify(result));
   } catch (error) {
